@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PonteTech</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+    
+        body {
+            align-items: flex-start;
+        }
+        .dashboard-container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 2rem;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1rem;
+        }
+        .header h2 {
+            margin: 0;
+        }
+        #logout-btn {
+            background-color: #d93025;
+            padding: 0.6rem 1rem;
+        }
+        #logout-btn:hover {
+            background-color: #a51b12;
+        }
+        
+        #create-task-form {
+            background-color: #fdfdfd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
+        #create-task-form h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        #create-task-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+            min-height: 80px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            background-color: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .filter-container .form-group {
+            margin: 0;
+            flex-grow: 1; 
+        }
+
+        .task-list {
+            margin-top: 1rem; 
+        }
+        .task-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-info {
+            flex-grow: 1;
+            margin-right: 1rem;
+        }
+        .task-info div {
+            margin-top: 0.75rem;
+        }
+        .task-item h4 {
+            margin: 0 0 5px 0;
+        }
+        .task-item p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        .task-creator,
+        .task-date {
+            font-size: 0.8rem;
+            color: #888;
+            margin: 0;
+        }
+        .task-creator {
+            margin-top: 5px !important;
+        }
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .status-select {
+            width: 140px;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .status-Pendente { background-color: #f0ad4e; color: white; }
+        .status-Em-Progresso { background-color: #0275d8; color: white; }
+        .status-Concluída { background-color: #5cb85c; color: white; }
+
+        .priority {
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+        .priority-Baixa { background-color: #6c757d; color: white; }
+        .priority-Media { background-color: #ffc107; color: #333; }
+        .priority-Alta { background-color: #dc3545; color: white; }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+            }
+
+            .form-container,
+            .dashboard-container {
+                padding: 1.5rem;
+                margin-top: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            #logout-btn {
+                width: 100%;
+            }
+
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .task-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .status-select {
+                width: 100%;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h2>Meu Dashboard</h2>
+            <button id="logout-btn" class="btn">Sair</button>
+        </div>
+
+        <form id="create-task-form">
+            <h3>Criar Nova Tarefa</h3>
+            
+            <p id="create-error-message" class="error-message"></p>
+            
+            <div class="form-group">
+                <label for="task-titulo">Título</label>
+                <input type="text" id="task-titulo" required>
+            </div>
+            <div class="form-group">
+                <label for="task-descricao">Descrição</label>
+                <textarea id="task-descricao" required></textarea>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="task-prioridade">Prioridade</label>
+                    <select id="task-prioridade">
+                        <option value="Baixa">Baixa</option>
+                        <option value="Média" selected>Média</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="task-status">Status</label>
+                    <select id="task-status">
+                        <option value="Pendente" selected>Pendente</option>
+                        <option value="Em Progresso">Em Progresso</option>
+                        <option value="Concluída">Concluída</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn">Adicionar Tarefa</button>
+        </form>
+        
+        <div class="filter-container">
+            <div class="form-group">
+                <label for="filter-status">Filtrar por Status</label>
+                <select id="filter-status">
+                    <option value="">Todos</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Em Progresso">Em Progresso</option>
+                    <option value="Concluída">Concluída</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="filter-prioridade">Filtrar por Prioridade</label>
+                <select id="filter-prioridade">
+                    <option value="">Todas</option>
+                    <option value="Baixa">Baixa</option>
+                    <option value="Média">Média</option>
+                    <option value="Alta">Alta</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="task-list" id="task-list-container">
+            <p>Carregando tarefas...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
