@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-
+    
     const loginForm = document.getElementById("login-form");
     const errorMessageElement = document.getElementById("error-message");
 
@@ -33,35 +33,42 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             } catch (error) {
-                errorMessageElement.textContent = "Não foi possível conectar ao servidor.";
+                console.error("ERRO NO CATCH DO LOGIN:", error);
+                errorMessageElement.textContent = `Erro de conexão (catch): ${error.message}`;
                 errorMessageElement.style.display = "block";
             }
         });
     }
 
-    
     const registerForm = document.getElementById("register-form");
 
     if (registerForm) {
         
         registerForm.addEventListener("submit", async function (event) {
             event.preventDefault();
-            const errorMessageElement = document.getElementById("error-message"); 
-            errorMessageElement.style.display = "none";
-            errorMessageElement.textContent = "";
+            const regErrorElement = document.getElementById("error-message"); 
+            regErrorElement.style.display = "none";
+            regErrorElement.textContent = "";
 
             const nome = document.getElementById("nome").value;
             const email = document.getElementById("email").value;
             const senha = document.getElementById("senha").value;
 
             if (nome.length < 3) {
-                errorMessageElement.textContent = "Nome deve ter pelo menos 3 caracteres.";
-                errorMessageElement.style.display = "block";
+                regErrorElement.textContent = "Nome deve ter pelo menos 3 caracteres.";
+                regErrorElement.style.display = "block";
                 return;
             }
             if (senha.length < 8) {
-                errorMessageElement.textContent = "Senha deve ter pelo menos 8 caracteres.";
-                errorMessageElement.style.display = "block";
+                regErrorElement.textContent = "Senha deve ter pelo menos 8 caracteres.";
+                regErrorElement.style.display = "block";
+                return;
+            }
+            
+            const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+            if (!emailRegex.test(email)) {
+                regErrorElement.textContent = "Formato de email inválido.";
+                regErrorElement.style.display = "block";
                 return;
             }
 
@@ -81,18 +88,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.href = "/login"; 
 
                 } else {
-                    errorMessageElement.textContent = data.erro || "Ocorreu um erro no cadastro.";
-                    errorMessageElement.style.display = "block";
+                    regErrorElement.textContent = data.erro || "Ocorreu um erro no cadastro.";
+                    regErrorElement.style.display = "block";
                 }
 
             } catch (error) {
-                errorMessageElement.textContent = "Não foi possível conectar ao servidor.";
-                errorMessageElement.style.display = "block";
+                console.error("ERRO NO CATCH DO CADASTRO:", error);
+                regErrorElement.textContent = `Erro de conexão (catch): ${error.message}`;
+                regErrorElement.style.display = "block";
             }
         });
     }
     
-   
+    
     const taskListContainer = document.getElementById("task-list-container");
     
     if (taskListContainer) {
@@ -114,18 +122,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filterStatus = document.getElementById("filter-status");
         const filterPriority = document.getElementById("filter-prioridade");
+        const filterSearch = document.getElementById("filter-search");
+        const filterDate = document.getElementById("filter-date");
+        const filterFavoritesBtn = document.getElementById("filter-favorites");
+        let favoritesOnly = false; 
+       
         
-
+        let searchTimeout;
+        
+        filterSearch.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchTasks();
+            }, 500);
+        });
+        filterDate.addEventListener('change', fetchTasks);
         filterStatus.addEventListener('change', fetchTasks);
         filterPriority.addEventListener('change', fetchTasks);
+        
+        
+        filterFavoritesBtn.addEventListener('click', function() {
+            
+            favoritesOnly = !favoritesOnly;
+            
+            filterFavoritesBtn.classList.toggle('active', favoritesOnly);
+            if (favoritesOnly) {
+                filterFavoritesBtn.textContent = "★ Mostrando Apenas Favoritos";
+            } else {
+                filterFavoritesBtn.textContent = "★ Mostrar Apenas Favoritos";
+            }
+            
+            fetchTasks();
+        });
+       
 
 
         async function fetchTasks() {
             try {
-                
                 const status = filterStatus.value;
                 const prioridade = filterPriority.value;
-                
+                const search = filterSearch.value;
+                const date = filterDate.value;
+
                 let apiUrl = "/api/tasks?";
                 if (status) {
                     apiUrl += `status=${status}&`;
@@ -133,7 +171,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (prioridade) {
                     apiUrl += `prioridade=${prioridade}&`;
                 }
-               
+                if (search && search.trim() !== '') {
+                    apiUrl += `search=${search}&`;
+                }
+                if (date) {
+                    apiUrl += `date=${date}&`;
+                }
+                
+                if (favoritesOnly) {
+                    apiUrl += `favoritos=true&`;
+                }
+                
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -149,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 if (!response.ok) {
-                    throw new Error("Falha ao buscar tarefas.");
+                    throw new Error(`Falha ao buscar tarefas. Status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -185,17 +233,41 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="task-info">
                         <h4>${tarefa.titulo}</h4>
                         <p>${tarefa.descricao || 'Sem descrição.'}</p>
-                        
                         <p class="task-creator">Criada por: ${criadorNome}</p>
                         <p class="task-date">Em: ${dataFormatada}</p> 
-                        
                         <div>
                             <span class="status ${statusClass}">${tarefa.status}</span>
                             <span class="priority ${priorityClass}">${tarefa.prioridade}</span>
                         </div>
                     </div>
                     
+                    <div class="task-edit-form">
+                        <div class="form-group">
+                            <label>Título:</label>
+                            <input type="text" class="edit-titulo" value="${tarefa.titulo}">
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição:</label>
+                            <textarea class="edit-descricao">${tarefa.descricao}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Prioridade:</label>
+                            <select class="edit-prioridade">
+                                <option value="Baixa" ${tarefa.prioridade === 'Baixa' ? 'selected' : ''}>Baixa</option>
+                                <option value="Média" ${tarefa.prioridade === 'Média' ? 'selected' : ''}>Média</option>
+                                <option value="Alta" ${tarefa.prioridade === 'Alta' ? 'selected' : ''}>Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                     <div class="task-actions">
+                        <span 
+                            class="btn-favorite ${tarefa.favorita ? 'favorited' : ''}" 
+                            title="Marcar como favorita"
+                        >★</span>
+                        <button class="btn-edit">Editar</button>
+                        <button class="btn-save">Salvar</button>
+                        
                         <select class="status-select" ${tarefa.status === 'Concluída' ? 'disabled' : ''}>
                             <option value="Pendente" ${tarefa.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
                             <option value="Em Progresso" ${tarefa.status === 'Em Progresso' ? 'selected' : ''}>Em Progresso</option>
@@ -235,8 +307,73 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }
             }
+            
+            if (event.target.classList.contains('btn-edit')) {
+                taskElement.classList.add('is-editing');
+            }
 
-        
+            if (event.target.classList.contains('btn-save')) {
+                const novoTitulo = taskElement.querySelector('.edit-titulo').value;
+                const novaDescricao = taskElement.querySelector('.edit-descricao').value;
+                const novaPrioridade = taskElement.querySelector('.edit-prioridade').value;
+
+                const updateData = {
+                    titulo: novoTitulo,
+                    descricao: novaDescricao,
+                    prioridade: novaPrioridade
+                };
+
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(updateData) 
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        taskElement.classList.remove('is-editing');
+                        fetchTasks(); 
+                    } else {
+                        alert(`Erro ao salvar: ${data.erro}`);
+                    }
+                } catch (err) {
+                    alert('Erro ao conectar ao servidor.');
+                }
+            }
+
+            
+            if (event.target.classList.contains('btn-favorite')) {
+                
+                const isFavorited = event.target.classList.contains('favorited');
+                const novoFavorito = !isFavorited; 
+
+                try {
+                    const response = await fetch(`/api/tasks/${taskId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        
+                        body: JSON.stringify({ favorita: novoFavorito }) 
+                    });
+
+                    if (response.ok) {
+                        
+                        event.target.classList.toggle('favorited', novoFavorito);
+                    } else {
+                        alert('Falha ao atualizar favorito.');
+                    }
+                } catch (err) {
+                    alert('Erro ao conectar ao servidor.');
+                }
+            }
+            
         });
 
         taskListContainer.addEventListener('change', async function(event) {

@@ -4,7 +4,9 @@ from extensions import db, bcrypt, jwt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from models import Usuario, Tarefa
 from sqlalchemy import func, desc
-from sqlalchemy.orm import joinedload 
+from sqlalchemy.orm import joinedload
+from datetime import datetime, time 
+import re 
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -57,6 +59,9 @@ def register():
     
     if len(senha) < 8:
         return jsonify({"erro": "Senha deve ter pelo menos 8 caracteres"}), 400
+        
+    if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
+        return jsonify({"erro": "Formato de email inválido"}), 400
 
     usuario_existente = Usuario.query.filter_by(email=email).first()
     
@@ -138,6 +143,7 @@ def create_task():
         criador_id=id_usuario_logado,
         prioridade=prioridade,
         status=status
+        
     )
     db.session.add(nova_tarefa)
     db.session.commit()
@@ -150,7 +156,8 @@ def create_task():
             "status": nova_tarefa.status,
             "prioridade": nova_tarefa.prioridade, 
             "criador_id": nova_tarefa.criador_id,
-            "criador_nome": usuario_logado.nome
+            "criador_nome": usuario_logado.nome,
+            "favorita": nova_tarefa.favorita 
         }
     }), 201
 
@@ -159,12 +166,15 @@ def create_task():
 def list_tasks():
     id_usuario_logado = int(get_jwt_identity())
 
-   
     query = Tarefa.query.options(joinedload(Tarefa.criador)).filter_by(criador_id=id_usuario_logado)
 
     filtro_status = request.args.get('status')
     filtro_prioridade = request.args.get('prioridade')
+    filtro_search = request.args.get('search')
+    filtro_data_str = request.args.get('date')
     
+    filtro_favoritos = request.args.get('favoritos')
+
 
     if filtro_status:
         query = query.filter_by(status=filtro_status)
@@ -172,7 +182,21 @@ def list_tasks():
     if filtro_prioridade:
         query = query.filter_by(prioridade=filtro_prioridade)
 
-   
+    if filtro_search:
+        query = query.filter(Tarefa.titulo.ilike(f"%{filtro_search}%"))
+
+    if filtro_data_str:
+        try:
+            data_obj = datetime.strptime(filtro_data_str, '%Y-%m-%d').date()
+            data_inicio = datetime.combine(data_obj, time.min)
+            data_fim = datetime.combine(data_obj, time.max)
+            query = query.filter(Tarefa.created_at >= data_inicio).filter(Tarefa.created_at <= data_fim)
+        except ValueError:
+            pass 
+            
+    if filtro_favoritos == 'true':
+        query = query.filter_by(favorita=True)
+
     query = query.order_by(desc(Tarefa.created_at))
     
     tarefas = query.all()
@@ -187,7 +211,7 @@ def list_tasks():
             "prioridade": tarefa.prioridade,
             "created_at": tarefa.created_at.isoformat() if tarefa.created_at else None,
             "criador_nome": tarefa.criador.nome,
-            
+            "favorita": tarefa.favorita 
         })
 
     return jsonify({
@@ -199,7 +223,6 @@ def list_tasks():
 def get_task_detail(task_id):
     id_usuario_logado = int(get_jwt_identity())
     
-
     tarefa = Tarefa.query.options(joinedload(Tarefa.criador)).get_or_404(task_id)
 
     if tarefa.criador_id != id_usuario_logado:
@@ -214,10 +237,11 @@ def get_task_detail(task_id):
             "prioridade": tarefa.prioridade,
             "created_at": tarefa.created_at.isoformat() if tarefa.created_at else None,
             "updated_at": tarefa.updated_at.isoformat() if tarefa.updated_at else None,
-            "criador_nome": tarefa.criador.nome
-            
+            "criador_nome": tarefa.criador.nome,
+            "favorita": tarefa.favorita 
         }
     }), 200
+
 
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
@@ -230,7 +254,24 @@ def update_task(task_id):
     
     dados = request.get_json()
     
+    if 'titulo' in dados:
+        titulo = dados.get('titulo')
+        if not titulo or len(titulo) < 3 or len(titulo) > 100:
+            return jsonify({"erro": "Título deve ter entre 3 e 100 caracteres"}), 400
+        tarefa.titulo = titulo
 
+    if 'descricao' in dados:
+        descricao = dados.get('descricao')
+        if not descricao or len(descricao) < 10 or len(descricao) > 500:
+            return jsonify({"erro": "Descrição deve ter entre 10 e 500 caracteres"}), 400
+        tarefa.descricao = descricao
+
+    if 'prioridade' in dados:
+        prioridade = dados.get('prioridade')
+        prioridades_permitidas = ['Baixa', 'Média', 'Alta']
+        if not prioridade or prioridade not in prioridades_permitidas:
+            return jsonify({"erro": "Prioridade inválida"}), 400
+        tarefa.prioridade = prioridade
     
     if 'status' in dados:
         novo_status = dados.get('status')
@@ -246,6 +287,13 @@ def update_task(task_id):
         
         tarefa.status = novo_status
 
+    if 'favorita' in dados:
+        novo_favorito = dados.get('favorita')
+        if isinstance(novo_favorito, bool):
+            tarefa.favorita = novo_favorito
+        else:
+            return jsonify({"erro": "Valor de 'favorita' deve ser true ou false"}), 400
+
     db.session.commit()
     db.session.refresh(tarefa)
 
@@ -255,6 +303,9 @@ def update_task(task_id):
             "id": tarefa.id,
             "titulo": tarefa.titulo,
             "status": tarefa.status,
+            "prioridade": tarefa.prioridade,
+            "descricao": tarefa.descricao,
+            "favorita": tarefa.favorita, # --- ADIÇÃO ---
             "updated_at": tarefa.updated_at.isoformat() if tarefa.updated_at else None
         }
     }), 200

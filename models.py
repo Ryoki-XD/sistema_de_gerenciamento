@@ -26,7 +26,11 @@ class Tarefa(db.Model):
     descricao = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Pendente')
     prioridade = db.Column(db.String(20), nullable=False, default='Média')
+    
+    favorita = db.Column(db.Boolean, default=False, nullable=False)
+    
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     criador_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+
     criador = db.relationship('Usuario', back_populates='tarefas')

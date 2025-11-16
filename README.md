@@ -15,21 +15,26 @@ O projeto inclui um backend completo em **Python (Flask)** com uma API RESTful e
     * `POST /api/tasks` (Criar)
     * `GET /api/tasks` (Listar)
     * `GET /api/tasks/:id` (Ver detalhes)
-    * `PUT /api/tasks/:id` (Atualizar status)
+    * `PUT /api/tasks/:id` (Atualizar status, título, descrição e prioridade)
     * `DELETE /api/tasks/:id` (Deletar)
 * **Segurança:** Rotas de tarefas protegidas, permitindo que usuários acessem apenas suas próprias tarefas.
 * **Dashboard:** Rota `/api/dashboard` que conta tarefas por status.
-* **Filtros:** A rota `GET /api/tasks` aceita filtros por `?status=` e `?prioridade=`.
-* **Ordenação:** A rota `GET /api/tasks` ordena por data de criação (mais novas primeiro).
+* **Filtros e Busca:** A rota `GET /api/tasks` aceita filtros por:
+    * `?status=`
+    * `?prioridade=`
+    * `?search=` (busca por título)
+    * `?date=` (busca por data de criação)
+    * `?order=` (asc/desc)
 
 ### Frontend
 * Página de **Login** (`/login`)
-* Página de **Cadastro** (`/register`)
+* Página de **Cadastro** (`/register`) com validação de formato de email (Regex).
 * Página de **Dashboard** (`/dashboard`)
 * Funcionalidade de **Criar** novas tarefas (com Status e Prioridade).
+* Funcionalidade de **Editar** Título, Descrição e Prioridade (em linha).
 * Funcionalidade de **Atualizar Status** de tarefas (via dropdown).
 * Funcionalidade de **Deletar** tarefas.
-* Funcionalidade de **Filtrar** tarefas por Status e Prioridade.
+* **Filtro Dropdown** completo com busca por Título, Data, Status e Prioridade.
 * Exibição do **Nome do Criador** e **Data de Criação** em cada tarefa.
 * Design responsivo (funciona em mobile).
 
@@ -60,16 +65,17 @@ Este é o método preferido e mais simples.
 **Instruções:**
 1.  Clone este repositório.
 2.  Abra um terminal na pasta raiz do projeto.
-3.  Execute o comando:
+3.  Execute o comando para construir e iniciar o servidor:
     ```bash
     docker-compose up --build
     ```
-4.  O Docker irá construir a imagem, baixar as dependências e iniciar o servidor. **Nota:** O banco de dados estará vazio.
-5.  Para popular o banco com dados de teste (usuários e tarefas), abra **outro terminal** e execute:
+4.  O Docker irá construir a imagem e iniciar o servidor. O banco de dados estará **vazio**.
+5.  Para popular o banco com os dados de teste (como pedido no desafio), abra **outro terminal** e execute:
     ```bash
-    # (Windows)
+    # (No Windows)
     docker-compose exec web python seed.py
-    # (Mac/Linux)
+    
+    # (No Mac/Linux)
     # docker-compose exec web python3 seed.py
     ```
 6.  Acesse **`http://127.0.0.1:5000`** no seu navegador (você será redirecionado para `/login`).
@@ -94,7 +100,7 @@ Este é o método preferido e mais simples.
     ```bash
     pip install -r requirements.txt
     ```
-4.  Crie e popule o banco de dados com dados de teste (usuários e tarefas):
+4.  **Execute o script de seed** para criar e popular o banco de dados (`app.db`) com dados de teste:
     ```bash
     python seed.py
     ```
@@ -104,7 +110,12 @@ Este é o método preferido e mais simples.
     ```
 6.  Acesse **`http://127.0.0.1:5000`** no seu navegador.
 
-**Usuário de Teste (criado pelo `seed.py`):**
+---
+
+### 👤 Usuário de Teste
+
+O script `seed.py` (executado em qualquer um dos métodos acima) cria o seguinte usuário de teste:
+
 * **Email:** `admin@teste.com`
 * **Senha:** `Teste@123`
 

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
     <style>
-    
+        
         body {
             align-items: flex-start;
         }
@@ -62,21 +62,72 @@
             gap: 1rem;
         }
 
-        .filter-container {
-            display: flex;
-            gap: 1rem;
+        details.filter-dropdown {
             margin-top: 2rem;
             background-color: #f9f9f9;
-            padding: 1rem;
+            border: 1px solid #eee;
             border-radius: 8px;
+        }
+        details.filter-dropdown summary {
+            padding: 1rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            list-style: none;
+        }
+        details.filter-dropdown summary::-webkit-details-marker {
+            display: none;
+        }
+        details.filter-dropdown summary::after {
+            content: '▼';
+            float: right;
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
+        }
+        details[open].filter-dropdown summary {
+            border-bottom: 1px solid #eee;
+        }
+        details[open].filter-dropdown summary::after {
+            transform: rotate(180deg);
+        }
+        .filter-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1rem;
         }
         .filter-container .form-group {
             margin: 0;
-            flex-grow: 1; 
         }
+        .filter-container .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .btn-filter-favorite {
+            grid-column: 1 / -1; 
+            padding: 0.75rem;
+            border: 1px solid #ffc107;
+            background-color: #fff;
+            color: #856404;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-filter-favorite:hover {
+            background-color: #fff8e1;
+        }
+        .btn-filter-favorite.active {
+           
+            background-color: #ffc107;
+            color: #333;
+            border-color: #ffc107;
+        }
+        
 
         .task-list {
-            margin-top: 1rem; 
+            margin-top: 1rem;
         }
         .task-item {
             background-color: #f9f9f9;
@@ -156,6 +207,21 @@
         .priority-Baixa { background-color: #6c757d; color: white; }
         .priority-Media { background-color: #ffc107; color: #333; }
         .priority-Alta { background-color: #dc3545; color: white; }
+        
+        .btn-favorite {
+            font-size: 1.5rem;
+            color: #ccc;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.2s ease;
+        }
+        .btn-favorite:hover {
+            color: #ffc107;
+        }
+        .btn-favorite.favorited {
+            color: #ffc107;
+        }
+
 
         @media (max-width: 768px) {
             body {
@@ -199,7 +265,7 @@
             }
 
             .filter-container {
-                flex-direction: column;
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -246,26 +312,42 @@
             <button type="submit" class="btn">Adicionar Tarefa</button>
         </form>
         
-        <div class="filter-container">
-            <div class="form-group">
-                <label for="filter-status">Filtrar por Status</label>
-                <select id="filter-status">
-                    <option value="">Todos</option>
-                    <option value="Pendente">Pendente</option>
-                    <option value="Em Progresso">Em Progresso</option>
-                    <option value="Concluída">Concluída</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="filter-prioridade">Filtrar por Prioridade</label>
-                <select id="filter-prioridade">
-                    <option value="">Todas</option>
-                    <option value="Baixa">Baixa</option>
-                    <option value="Média">Média</option>
-                    <option value="Alta">Alta</option>
-                </select>
-            </div>
-        </div>
+        <details class="filter-dropdown">
+            <summary>Mostrar Filtros de Tarefas</summary>
+            
+            <div class="filter-container">
+                <div class="form-group full-width">
+                    <label for="filter-search">Buscar por Título</label>
+                    <input type="search" id="filter-search" placeholder="Buscar...">
+                </div>
+                <div class="form-group">
+                    <label for="filter-status">Filtrar por Status</label>
+                    <select id="filter-status">
+                        <option value="">Todos</option>
+                        <option value="Pendente">Pendente</option>
+                        <option valuea="Em Progresso">Em Progresso</option>
+                        <option value="Concluída">Concluída</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-prioridade">Filtrar por Prioridade</label>
+                    <select id="filter-prioridade">
+                        <option value="">Todas</option>
+                        <option value="Baixa">Baixa</option>
+                        <option value="Média">Média</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label for="filter-date">Filtrar por Data de Criação</label>
+                    <input type="date" id="filter-date">
+                </div>
+                
+                <button class="btn-filter-favorite full-width" id="filter-favorites">
+                    ★ Mostrar Apenas Favoritos
+                </button>
+                </div>
+        </details>
 
         <div class="task-list" id="task-list-container">
             <p>Carregando tarefas...</p>
