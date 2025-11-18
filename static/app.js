@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
         
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
+<<<<<<< HEAD
+
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
             errorMessageElement.style.display = "none";
             errorMessageElement.textContent = "";
 
@@ -100,7 +104,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     
+<<<<<<< HEAD
+=======
     
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
     const taskListContainer = document.getElementById("task-list-container");
     
     if (taskListContainer) {
@@ -125,9 +132,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const filterSearch = document.getElementById("filter-search");
         const filterDate = document.getElementById("filter-date");
         const filterFavoritesBtn = document.getElementById("filter-favorites");
+<<<<<<< HEAD
+        let favoritesOnly = false;
+=======
         let favoritesOnly = false; 
        
         
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
         let searchTimeout;
         
         filterSearch.addEventListener('input', function() {
@@ -140,21 +151,31 @@ document.addEventListener("DOMContentLoaded", function () {
         filterStatus.addEventListener('change', fetchTasks);
         filterPriority.addEventListener('change', fetchTasks);
         
+<<<<<<< HEAD
+        filterFavoritesBtn.addEventListener('click', function() {
+            favoritesOnly = !favoritesOnly;
+=======
         
         filterFavoritesBtn.addEventListener('click', function() {
             
             favoritesOnly = !favoritesOnly;
             
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
             filterFavoritesBtn.classList.toggle('active', favoritesOnly);
             if (favoritesOnly) {
                 filterFavoritesBtn.textContent = "★ Mostrando Apenas Favoritos";
             } else {
                 filterFavoritesBtn.textContent = "★ Mostrar Apenas Favoritos";
             }
+<<<<<<< HEAD
+            fetchTasks();
+        });
+=======
             
             fetchTasks();
         });
        
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 
 
         async function fetchTasks() {
@@ -177,11 +198,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (date) {
                     apiUrl += `date=${date}&`;
                 }
+<<<<<<< HEAD
+                if (favoritesOnly) {
+                    apiUrl += `favoritos=true&`;
+                }
+=======
                 
                 if (favoritesOnly) {
                     apiUrl += `favoritos=true&`;
                 }
                 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -265,6 +292,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             class="btn-favorite ${tarefa.favorita ? 'favorited' : ''}" 
                             title="Marcar como favorita"
                         >★</span>
+<<<<<<< HEAD
+                        
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
                         <button class="btn-edit">Editar</button>
                         <button class="btn-save">Salvar</button>
                         
@@ -346,11 +377,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
 
+<<<<<<< HEAD
+            if (event.target.classList.contains('btn-favorite')) {
+                const isFavorited = event.target.classList.contains('favorited');
+                const novoFavorito = !isFavorited;
+=======
             
             if (event.target.classList.contains('btn-favorite')) {
                 
                 const isFavorited = event.target.classList.contains('favorited');
                 const novoFavorito = !isFavorited; 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 
                 try {
                     const response = await fetch(`/api/tasks/${taskId}`, {
@@ -359,12 +396,18 @@ document.addEventListener("DOMContentLoaded", function () {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
+<<<<<<< HEAD
+=======
                         
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
                         body: JSON.stringify({ favorita: novoFavorito }) 
                     });
 
                     if (response.ok) {
+<<<<<<< HEAD
+=======
                         
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
                         event.target.classList.toggle('favorited', novoFavorito);
                     } else {
                         alert('Falha ao atualizar favorito.');
@@ -373,7 +416,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert('Erro ao conectar ao servidor.');
                 }
             }
+<<<<<<< HEAD
+=======
             
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
         });
 
         taskListContainer.addEventListener('change', async function(event) {
@@ -422,15 +468,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 const status = document.getElementById("task-status").value;
 
                 if (titulo.length < 3 || titulo.length > 100) {
+<<<<<<< HEAD
+                    createErrorMessage.textContent = "Título deve ter entre 3 e 100 caracteres.";
+                    createErrorMessage.style.display = "block";
+                    return;
+                }
+                
+                if (descricao.length < 10) {
+=======
                     createErrorMessage.textContent = "Título deve ter pelo menos 3 caracteres.";
                     createErrorMessage.style.display = "block";
                     return;
                 }
                 if (descricao.length < 10 || descricao.length > 500) {
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
                     createErrorMessage.textContent = "Descrição deve ter pelo menos 10 caracteres.";
                     createErrorMessage.style.display = "block";
                     return;
                 }
+<<<<<<< HEAD
+                if (descricao.length > 500) {
+                    createErrorMessage.textContent = "Descrição deve ter no máximo 500 caracteres.";
+                    createErrorMessage.style.display = "block";
+                    return;
+                }
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
                 
                 try {
                     const response = await fetch("/api/tasks", {

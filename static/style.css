@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+/* Conteúdo para static/style.css */
+
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: #f4f7f6;
@@ -10,7 +15,10 @@ body {
     box-sizing: border-box;
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .form-container {
     background-color: #ffffff;
     padding: 2rem 3rem;
@@ -28,7 +36,10 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .form-group {
     margin-bottom: 1.25rem;
 }
@@ -47,7 +58,11 @@ h2 {
 #filter-prioridade,
 #filter-search,
 #filter-date,
+<<<<<<< HEAD
+.task-edit-form input,
+=======
 .task-edit-form input, 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .task-edit-form textarea {
     width: 100%;
     padding: 0.75rem;
@@ -60,7 +75,10 @@ h2 {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 #create-task-form textarea,
 .task-edit-form textarea {
     min-height: 80px;
@@ -91,7 +109,11 @@ select#task-status,
 #filter-prioridade:focus,
 #filter-search:focus,
 #filter-date:focus,
+<<<<<<< HEAD
+.task-edit-form input:focus,
+=======
 .task-edit-form input:focus,  
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .task-edit-form textarea:focus {
     border-color: #007bff;
     outline: none;
@@ -142,7 +164,10 @@ select#task-status,
     display: none; 
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .dashboard-container {
     width: 100%;
     max-width: 900px;
@@ -232,6 +257,30 @@ details[open].filter-dropdown summary::after {
     grid-column: 1 / -1;
 }
 
+<<<<<<< HEAD
+.btn-filter-favorite {
+    grid-column: 1 / -1;
+    padding: 0.75rem;
+    border: 1px solid #ffc107;
+    background-color: #fff;
+    color: #856404;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.btn-filter-favorite:hover {
+    background-color: #fff8e1;
+}
+.btn-filter-favorite.active {
+    background-color: #ffc107;
+    color: #333;
+    border-color: #ffc107;
+}
+
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .task-list {
     margin-top: 1rem;
 }
@@ -248,17 +297,31 @@ details[open].filter-dropdown summary::after {
 .task-info {
     flex-grow: 1;
     margin-right: 1rem;
+<<<<<<< HEAD
+    min-width: 0;
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 }
 .task-info div {
     margin-top: 0.75rem;
 }
 .task-item h4 {
     margin: 0 0 5px 0;
+<<<<<<< HEAD
+    overflow-wrap: break-word;
+    word-break: break-word;
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 }
 .task-item p {
     margin: 0;
     color: #555;
     font-size: 0.9rem;
+<<<<<<< HEAD
+    overflow-wrap: break-word;
+    word-break: break-word;
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 }
 
 .task-creator,
@@ -275,9 +338,15 @@ details[open].filter-dropdown summary::after {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+<<<<<<< HEAD
+    flex-shrink: 0;
+}
+
+=======
 }
 
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .btn-edit,
 .btn-save {
     background-color: #17a2b8;
@@ -293,19 +362,42 @@ details[open].filter-dropdown summary::after {
     background-color: #117a8b;
 }
 .btn-save {
+<<<<<<< HEAD
+    background-color: #28a745;
+=======
     background-color: #28a745; 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 }
 .btn-save:hover {
     background-color: #1e7e34;
 }
 
+<<<<<<< HEAD
+.task-edit-form {
+    display: none;
+=======
 
 .task-edit-form {
     display: none; 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
     width: 100%;
     margin-bottom: 1rem;
 }
 .task-item.is-editing .task-edit-form {
+<<<<<<< HEAD
+    display: block;
+}
+.task-item.is-editing .task-info {
+    display: none;
+}
+
+.task-item.is-editing .task-actions .btn-edit,
+.task-item.is-editing .task-actions .btn-delete,
+.task-item.is-editing .task-actions .status-select,
+.task-item.is-editing .task-actions .btn-favorite {
+    display: none; 
+}
+=======
     display: block; 
 }
 .task-item.is-editing .task-info {
@@ -319,6 +411,7 @@ details[open].filter-dropdown summary::after {
     display: none; 
 }
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .task-actions .btn-save {
     display: none;
 }
@@ -326,7 +419,10 @@ details[open].filter-dropdown summary::after {
     display: inline-block;
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 .btn-delete {
     background-color: #dc3545;
     color: white;
@@ -367,6 +463,22 @@ details[open].filter-dropdown summary::after {
 .priority-Media { background-color: #ffc107; color: #333; }
 .priority-Alta { background-color: #dc3545; color: white; }
 
+<<<<<<< HEAD
+.btn-favorite {
+    font-size: 1.5rem;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+}
+.btn-favorite:hover {
+    color: #ffc107;
+}
+.btn-favorite.favorited {
+    color: #ffc107;
+}
+=======
+>>>>>>> f60c87ce5173feeb64ca047fa2c639070a77d925
 
 
 @media (max-width: 768px) {
